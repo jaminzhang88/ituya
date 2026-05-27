@@ -25,7 +25,7 @@ export default function Resources() {
     {
       title: '生产解决方案',
       desc: '涂鸦云端生产解决方案，支持授权码管理、固件烧录、产测验证全流程',
-      url: 'https://developer.tuya.com/cn/docs/iot/product-solution?id=Kbfwo4nte6nyp',
+      url: 'https://developer.tuya.com/cn/docs/iot/SCJJ-01?id=Kcpv15oujgz00',
       icon: '🏭',
       download: import.meta.env.BASE_URL + 'downloads/TYProductionToolkit.zip',
       size: '70 MB',
