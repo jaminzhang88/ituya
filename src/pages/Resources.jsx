@@ -19,7 +19,7 @@ export default function Resources() {
       desc: 'Nordic官方蓝牙调试工具，支持BLE扫描、连接、服务浏览、抓包分析',
       url: 'https://www.nordicsemi.com/Products/Development-tools/nRF-Connect-for-Desktop',
       icon: '📡',
-      download: './downloads/nrfconnect.zip',
+      download: import.meta.env.BASE_URL + 'downloads/nrfconnect.zip',
       size: '8.6 MB',
     },
     {
@@ -27,7 +27,7 @@ export default function Resources() {
       desc: '涂鸦云端生产解决方案，支持授权码管理、固件烧录、产测验证全流程',
       url: 'https://developer.tuya.com/cn/docs/iot/product-solution?id=Kbfwo4nte6nyp',
       icon: '🏭',
-      download: './downloads/TYProductionToolkit.zip',
+      download: import.meta.env.BASE_URL + 'downloads/TYProductionToolkit.zip',
       size: '70 MB',
     },
   ]
