@@ -5,13 +5,31 @@ import { Breadcrumb, CategoryBadge } from '../components/Layout'
 
 function parseMarkdown(md) {
   let html = md
-    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/^- (.*$)/gm, '<li>$1</li>')
-    .replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
-
+  // Strip anchor tags
+  html = html.replace(/<a[^>]*><\/a>/g, '')
+  // Code blocks with copy button
+  html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+    const escaped = code.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    const id = 'code-' + Math.random().toString(36).slice(2, 8)
+    return `<div class="relative group my-4"><pre id="${id}" class="bg-gray-900 text-gray-100 rounded-lg p-4 pr-12 overflow-x-auto text-sm"><code>${escaped}</code></pre><button onclick="navigator.clipboard.writeText(document.getElementById('${id}').innerText);this.textContent='✓ 已复制';setTimeout(()=>this.textContent='复制',1500)" class="absolute top-2 right-2 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded opacity-0 group-hover:opacity-100 transition-opacity">复制</button></div>`
+  })
+  // Headers
+  html = html.replace(/^#### (.*$)/gm, '<h4 class="text-sm font-semibold text-gray-800 mt-4 mb-2">$1</h4>')
+  html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>')
+  html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>')
+  // Images
+  html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" class="my-4 max-w-full rounded-lg border border-gray-200" />')
+  // Links
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" class="text-primary-600 hover:underline">$1</a>')
+  // Blockquotes
+  html = html.replace(/^> (.*$)/gm, '<blockquote class="border-l-4 border-primary-300 pl-4 my-2 text-gray-600 text-sm">$1</blockquote>')
+  // Inline
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+  html = html.replace(/`([^`]+)`/g, '<code class="bg-gray-100 px-1.5 py-0.5 rounded text-sm text-red-600">$1</code>')
+  // Lists
+  html = html.replace(/^- (.*$)/gm, '<li>$1</li>')
+  html = html.replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
+  // Tables
   html = html.replace(/\|(.+)\|\n\|[-| :]+\|\n((?:\|.+\|\n?)*)/g, (_, header, rows) => {
     const headers = header.split('|').filter(s => s.trim()).map(s => `<th>${s.trim()}</th>`).join('')
     const bodyRows = rows.trim().split('\n').map(row => {
@@ -23,6 +41,7 @@ function parseMarkdown(md) {
 
   html = html.replace(/(<li>.*<\/li>\n?)+/g, match => `<ul>${match}</ul>`)
   html = html.replace(/\n\n/g, '<br/>')
+  html = html.replace(/---/g, '<hr class="my-6 border-gray-200" />')
   return html
 }
 
@@ -35,7 +54,8 @@ const categoryMeta = {
 function extractHeadings(content) {
   const headings = []
   content.replace(/^(#{2,3}) (.+)$/gm, (_, hashes, text) => {
-    headings.push({ level: hashes.length, text: text.trim(), id: text.trim().replace(/\s+/g, '-') })
+    const clean = text.trim().replace(/<[^>]*>/g, '').replace(/^[\s-]*/, '')
+    if (clean && clean !== '目录') headings.push({ level: hashes.length, text: clean, id: clean.replace(/\s+/g, '-') })
   })
   return headings
 }
@@ -151,13 +171,13 @@ export function TutorialCategory({ category }) {
 
         {/* 右侧目录 */}
         {selectedTutorial && headings.length > 0 && (
-          <aside className="hidden xl:block w-52 flex-shrink-0 pl-4 border-l border-gray-200">
+          <aside className="hidden xl:block w-64 flex-shrink-0 pl-4 border-l border-gray-200">
             <div className="sticky top-24">
               <h4 className="text-xs font-semibold text-gray-900 mb-3 uppercase">本页包含内容</h4>
               <nav className="space-y-1.5">
                 {headings.map((h, i) => (
                   <div key={i} className={`text-sm text-gray-500 hover:text-primary-600 cursor-default transition-colors ${h.level === 3 ? 'pl-3' : ''}`}>
-                    <span className="line-clamp-1">{h.text}</span>
+                    <span className="block truncate" title={h.text}>{h.text}</span>
                   </div>
                 ))}
               </nav>
