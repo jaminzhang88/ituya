@@ -87,7 +87,7 @@ function downloadPdf(tutorial) {
 
 export function TutorialCategory({ category }) {
   const meta = categoryMeta[category]
-  const catTutorials = tutorials.filter(t => t.category === category)
+  const catTutorials = tutorials.filter(t => Array.isArray(t.category) ? t.category.includes(category) : t.category === category)
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState(catTutorials[0]?.id || null)
 
@@ -209,10 +209,10 @@ export function TutorialDetail({ id }) {
 
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 py-8">
-      <Breadcrumb items={[{ label: '指导文档', path: '/tutorials' }, { label: categoryMeta[tutorial.category]?.label, path: `/tutorials/category/${tutorial.category}` }, { label: tutorial.title }]} />
+      <Breadcrumb items={[{ label: '指导文档', path: '/tutorials' }, { label: categoryMeta[Array.isArray(tutorial.category) ? tutorial.category[0] : tutorial.category]?.label, path: `/tutorials/category/${Array.isArray(tutorial.category) ? tutorial.category[0] : tutorial.category}` }, { label: tutorial.title }]} />
       <div className="card">
         <div className="flex flex-wrap items-center gap-2 mb-4">
-          <CategoryBadge category={tutorial.category} />
+          {(Array.isArray(tutorial.category) ? tutorial.category : [tutorial.category]).map(c => <CategoryBadge key={c} category={c} />)}
           <span className="badge bg-gray-100 text-gray-500">{tutorial.difficulty}</span>
           <span className="text-xs text-gray-400 ml-auto">{tutorial.readTime}</span>
         </div>
@@ -243,7 +243,7 @@ export function TutorialList() {
             <div className="text-4xl mb-3">{cat.icon}</div>
             <h3 className="text-lg font-bold mb-1">{cat.label}</h3>
             <p className="text-sm text-white/80">{cat.desc}</p>
-            <span className="text-xs text-white/60 mt-2 block">{tutorials.filter(t => t.category === id).length} 篇文档</span>
+            <span className="text-xs text-white/60 mt-2 block">{tutorials.filter(t => Array.isArray(t.category) ? t.category.includes(id) : t.category === id).length} 篇文档</span>
             <div className="absolute -bottom-4 -right-4 text-8xl opacity-10">{cat.icon}</div>
           </Link>
         ))}

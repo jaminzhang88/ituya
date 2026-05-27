@@ -505,7 +505,7 @@ export const tutorials = [
   },
   {
     id: 'question-model',
-    category: 'wifi',
+    category: ['wifi', 'ble'],
     title: '客户问题定位模板',
     summary: '标准化的问题反馈模板，帮助快速定位WiFi/BLE产品开发中遇到的技术问题。',
     difficulty: '入门',
