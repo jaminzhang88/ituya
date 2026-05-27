@@ -47,14 +47,26 @@ export function Header() {
     <>
       <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-sm">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-          <Link to="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-600">
-              <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 shadow-md shadow-primary-200 group-hover:shadow-lg group-hover:shadow-primary-300 transition-all duration-300">
+              <svg className="absolute inset-0 h-full w-full" viewBox="0 0 36 36" fill="none">
+                <path d="M4 10h3" stroke="white" strokeWidth="0.8" strokeOpacity="0.4" strokeLinecap="round"/>
+                <circle cx="7" cy="10" r="0.8" fill="white" fillOpacity="0.5"/>
+                <path d="M32 13h-3" stroke="white" strokeWidth="0.8" strokeOpacity="0.4" strokeLinecap="round"/>
+                <circle cx="29" cy="13" r="0.8" fill="white" fillOpacity="0.5"/>
+                <path d="M4 26h2l2-2" stroke="white" strokeWidth="0.8" strokeOpacity="0.4" strokeLinecap="round"/>
+                <circle cx="8" cy="24" r="0.8" fill="white" fillOpacity="0.5"/>
+                <path d="M32 24h-2l-1 2" stroke="white" strokeWidth="0.8" strokeOpacity="0.4" strokeLinecap="round"/>
+                <circle cx="29" cy="26" r="0.8" fill="white" fillOpacity="0.5"/>
+              </svg>
+              <svg className="relative h-5 w-5 text-white drop-shadow-sm" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M14.5 2L6 13.5h5.5L10 22l9-12h-5.5L14.5 2z"/>
               </svg>
             </div>
-            <span className="text-lg font-bold text-gray-900">iTuya</span>
-            <span className="hidden sm:inline badge bg-primary-50 text-primary-700 border border-primary-200">FAE知识库</span>
+            <div className="flex flex-col">
+              <span className="text-lg font-bold text-gray-900 leading-tight tracking-tight"><span className="text-primary-600">i</span>Tuya</span>
+              <span className="hidden sm:block text-[10px] font-medium text-gray-400 tracking-wider uppercase">FAE Knowledge</span>
+            </div>
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1">
@@ -143,10 +155,16 @@ export function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <div className="h-7 w-7 rounded bg-primary-600 flex items-center justify-center">
-                <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+              <div className="relative h-7 w-7 rounded-lg bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center">
+                <svg className="absolute inset-0 h-full w-full" viewBox="0 0 36 36" fill="none">
+                  <path d="M4 10h3" stroke="white" strokeWidth="0.8" strokeOpacity="0.3" strokeLinecap="round"/>
+                  <circle cx="7" cy="10" r="0.8" fill="white" fillOpacity="0.4"/>
+                  <path d="M32 13h-3" stroke="white" strokeWidth="0.8" strokeOpacity="0.3" strokeLinecap="round"/>
+                  <circle cx="29" cy="13" r="0.8" fill="white" fillOpacity="0.4"/>
+                </svg>
+                <svg className="relative h-4 w-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M14.5 2L6 13.5h5.5L10 22l9-12h-5.5L14.5 2z"/></svg>
               </div>
-              <span className="font-semibold text-white">iTuya</span>
+              <span className="font-semibold text-white"><span className="text-primary-400">i</span>Tuya</span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed">涂鸦智能FAE技术实战知识库，专注WiFi/BLE/Zigbee IoT产品选型与落地服务。</p>
           </div>
