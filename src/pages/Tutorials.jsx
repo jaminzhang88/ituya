@@ -255,7 +255,7 @@ export function TutorialList() {
         {tutorials.map(t => (
           <Link key={t.id} to={`/tutorials/${t.id}`} className="card group">
             <div className="flex items-center gap-2 mb-3">
-              <CategoryBadge category={t.category} />
+              {(Array.isArray(t.category) ? t.category : [t.category]).map(c => <CategoryBadge key={c} category={c} />)}
               <span className="badge bg-gray-100 text-gray-500">{t.difficulty}</span>
               <span className="text-xs text-gray-400 ml-auto">{t.readTime}</span>
             </div>
