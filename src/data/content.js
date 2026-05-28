@@ -587,7 +587,7 @@ MCU 与模组交互日志：
 6. 即可查看设备与云端的通信日志
 
 ---
-## <a id="section4"></a>五、串口工具下载
+## <a id="section5"></a>五、串口工具下载
   - [工具下载]( https://drive.weixin.qq.com/s?k=AGQAugfWAAkIU0W5wh)
   ![mcu-uart-wiring.png](https://images.tuyacn.com/content-platform/hestia/1778582170d6367693667.png)![uart-monitor-tool.png](https://images.tuyacn.com/content-platform/hestia/177858218117d16bcf286.png)
 ---

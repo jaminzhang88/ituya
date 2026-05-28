@@ -1,12 +1,49 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from '../components/Router'
 import { tutorials } from '../data/content'
 import { Breadcrumb, CategoryBadge } from '../components/Layout'
 
+function slugifyHeading(text) {
+  return text
+    .replace(/<[^>]*>/g, '')
+    .replace(/[`*_~]/g, '')
+    .trim()
+    .toLowerCase()
+    .replace(/[，。！？、；：“”‘’（）()【】[\]《》<>「」『』,.!?;:"'\\/|+=*&^%$#@~`]/g, '')
+    .replace(/\s+/g, '-')
+}
+
+function normalizeAnchorId(id) {
+  return decodeURIComponent(id || '').trim().replace(/^#/, '')
+}
+
+function collectHeadings(content) {
+  const headings = []
+  const seen = new Map()
+
+  content.replace(/^(#{2,3}) (.+)$/gm, (_, hashes, rawText) => {
+    const anchorMatch = rawText.match(/<a\s+[^>]*id=["']([^"']+)["'][^>]*><\/a>\s*/i)
+    const text = rawText.replace(/<a\s+[^>]*id=["'][^"']+["'][^>]*><\/a>\s*/i, '').trim()
+    const clean = text.replace(/<[^>]*>/g, '').trim()
+    if (!clean || clean === '目录') return
+
+    const baseId = normalizeAnchorId(anchorMatch?.[1]) || slugifyHeading(clean)
+    const count = seen.get(baseId) || 0
+    seen.set(baseId, count + 1)
+    headings.push({
+      level: hashes.length,
+      text: clean,
+      id: count === 0 ? baseId : `${baseId}-${count + 1}`,
+    })
+  })
+
+  return headings
+}
+
 function parseMarkdown(md) {
   let html = md
-  // Strip anchor tags
-  html = html.replace(/<a[^>]*><\/a>/g, '')
+  const headings = collectHeadings(md)
+  let headingIndex = 0
   // Code blocks with copy button
   html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
     const escaped = code.replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -14,13 +51,26 @@ function parseMarkdown(md) {
     return `<div class="relative group my-4"><pre id="${id}" class="bg-gray-900 text-gray-100 rounded-lg p-4 pr-12 overflow-x-auto text-sm"><code>${escaped}</code></pre><button onclick="navigator.clipboard.writeText(document.getElementById('${id}').innerText);this.textContent='✓ 已复制';setTimeout(()=>this.textContent='复制',1500)" class="absolute top-2 right-2 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded opacity-0 group-hover:opacity-100 transition-opacity">复制</button></div>`
   })
   // Headers
+  html = html.replace(/^(#{2,3}) (.*$)/gm, (_, hashes, text) => {
+    const clean = text.replace(/<a\s+[^>]*id=["'][^"']+["'][^>]*><\/a>\s*/i, '').trim()
+    if (clean.replace(/<[^>]*>/g, '').trim() === '目录') {
+      return hashes.length === 2 ? `<h2>${clean}</h2>` : `<h3>${clean}</h3>`
+    }
+
+    const heading = headings[headingIndex++]
+    const tag = hashes.length === 2 ? 'h2' : 'h3'
+    return heading ? `<${tag} id="${heading.id}">${clean}</${tag}>` : `<${tag}>${clean}</${tag}>`
+  })
   html = html.replace(/^#### (.*$)/gm, '<h4 class="text-sm font-semibold text-gray-800 mt-4 mb-2">$1</h4>')
-  html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>')
-  html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>')
   // Images
   html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" class="my-4 max-w-full rounded-lg border border-gray-200" />')
   // Links
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" class="text-primary-600 hover:underline">$1</a>')
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, href) => {
+    if (href.startsWith('#')) {
+      return `<a href="${href}" class="doc-anchor text-primary-600 hover:underline">${label}</a>`
+    }
+    return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">${label}</a>`
+  })
   // Blockquotes
   html = html.replace(/^> (.*$)/gm, '<blockquote class="border-l-4 border-primary-300 pl-4 my-2 text-gray-600 text-sm">$1</blockquote>')
   // Inline
@@ -52,12 +102,7 @@ const categoryMeta = {
 }
 
 function extractHeadings(content) {
-  const headings = []
-  content.replace(/^(#{2,3}) (.+)$/gm, (_, hashes, text) => {
-    const clean = text.trim().replace(/<[^>]*>/g, '').replace(/^[\s-]*/, '')
-    if (clean && clean !== '目录') headings.push({ level: hashes.length, text: clean, id: clean.replace(/\s+/g, '-') })
-  })
-  return headings
+  return collectHeadings(content)
 }
 
 function downloadPdf(tutorial) {
@@ -90,6 +135,7 @@ export function TutorialCategory({ category }) {
   const catTutorials = tutorials.filter(t => Array.isArray(t.category) ? t.category.includes(category) : t.category === category)
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState(catTutorials[0]?.id || null)
+  const contentRef = useRef(null)
 
   if (!meta) return <div className="py-20 text-center text-gray-500">分类未找到</div>
 
@@ -99,6 +145,24 @@ export function TutorialCategory({ category }) {
 
   const selectedTutorial = tutorials.find(t => t.id === selected)
   const headings = selectedTutorial ? extractHeadings(selectedTutorial.content) : []
+
+  const scrollToHeading = (id) => {
+    const target = contentRef.current?.querySelector(`#${CSS.escape(id)}`)
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  const handleDocClick = (event) => {
+    const anchor = event.target.closest?.('a.doc-anchor')
+    if (!anchor) return
+
+    const id = normalizeAnchorId(anchor.getAttribute('href'))
+    if (!id) return
+
+    event.preventDefault()
+    scrollToHeading(id)
+  }
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-6">
@@ -120,7 +184,7 @@ export function TutorialCategory({ category }) {
             {filtered.map(t => (
               <button
                 key={t.id}
-                onClick={() => setSelected(t.id)}
+                onClick={() => { setSelected(t.id); contentRef.current?.scrollTo({ top: 0 }) }}
                 className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${selected === t.id ? 'text-primary-600 font-medium bg-primary-50' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'}`}
               >
                 <span className="line-clamp-1">{t.title}</span>
@@ -135,7 +199,7 @@ export function TutorialCategory({ category }) {
         {/* 中间内容区 */}
         <main className="flex-1 min-w-0 px-6 lg:px-10">
           {selectedTutorial ? (
-            <div className="max-h-[calc(100vh-160px)] overflow-y-auto">
+            <div ref={contentRef} className="max-h-[calc(100vh-160px)] overflow-y-auto scroll-smooth">
               <div className="flex items-start justify-between gap-4 mb-2">
                 <h1 className="text-2xl font-bold text-gray-900">{selectedTutorial.title}</h1>
                 <div className="flex-shrink-0 flex items-center gap-3">
@@ -162,7 +226,11 @@ export function TutorialCategory({ category }) {
                 <span>·</span>
                 <span>{selectedTutorial.tags.join(' / ')}</span>
               </div>
-              <div className="doc-content" dangerouslySetInnerHTML={{ __html: parseMarkdown(selectedTutorial.content) }} />
+              <div
+                className="doc-content"
+                onClick={handleDocClick}
+                dangerouslySetInnerHTML={{ __html: parseMarkdown(selectedTutorial.content) }}
+              />
             </div>
           ) : (
             <div className="py-20 text-center text-gray-400">选择左侧文档查看内容</div>
@@ -176,9 +244,14 @@ export function TutorialCategory({ category }) {
               <h4 className="text-xs font-semibold text-gray-900 mb-3 uppercase">本页包含内容</h4>
               <nav className="space-y-1.5">
                 {headings.map((h, i) => (
-                  <div key={i} className={`text-sm text-gray-500 hover:text-primary-600 cursor-default transition-colors ${h.level === 3 ? 'pl-3' : ''}`}>
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => scrollToHeading(h.id)}
+                    className={`block w-full text-left text-sm text-gray-500 hover:text-primary-600 transition-colors ${h.level === 3 ? 'pl-3' : ''}`}
+                  >
                     <span className="block truncate" title={h.text}>{h.text}</span>
-                  </div>
+                  </button>
                 ))}
               </nav>
             </div>
