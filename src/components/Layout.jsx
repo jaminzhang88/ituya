@@ -149,6 +149,14 @@ export function Header() {
 }
 
 export function Footer() {
+  const [wechatOpen, setWechatOpen] = useState(false)
+  const wechatQrSrc = `${import.meta.env.BASE_URL}contact/wechat-qr.png`
+
+  const openWechatModal = (event) => {
+    event.preventDefault()
+    setWechatOpen(true)
+  }
+
   return (
     <footer className="border-t border-gray-200 bg-gray-900 py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -188,9 +196,15 @@ export function Footer() {
           <div>
             <h4 className="font-medium text-white mb-3">联系方式</h4>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li>技术咨询：企业微信</li>
-              <li>合作洽谈：微信群</li>
-              <li>紧急问题：在线支持</li>
+              <li>
+                <a href="#wechat-contact" onClick={openWechatModal} className="hover:text-primary-400">技术咨询：个人微信</a>
+              </li>
+              <li>
+                <a href="#wechat-contact" onClick={openWechatModal} className="hover:text-primary-400">合作洽谈：添加微信</a>
+              </li>
+              <li>
+                <a href="#wechat-contact" onClick={openWechatModal} className="hover:text-primary-400">紧急问题：扫码联系</a>
+              </li>
             </ul>
           </div>
         </div>
@@ -198,6 +212,41 @@ export function Footer() {
           &copy; 2026 iTuya FAE知识库. All rights reserved.
         </div>
       </div>
+      {wechatOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 py-8" onClick={() => setWechatOpen(false)}>
+          <div className="absolute inset-0 bg-gray-950/60 backdrop-blur-sm"></div>
+          <div className="relative w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl" onClick={event => event.stopPropagation()}>
+            <button
+              type="button"
+              onClick={() => setWechatOpen(false)}
+              className="absolute right-4 top-4 rounded-full p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+              aria-label="关闭微信二维码弹窗"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <div className="text-center">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100 text-2xl">💬</div>
+              <h3 className="text-lg font-bold text-gray-900">添加个人微信咨询</h3>
+              <p className="mt-2 text-sm text-gray-500">扫码添加微信，沟通产品选型、模组推荐、开发调试与量产问题</p>
+            </div>
+            <a
+              href={wechatQrSrc}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 block rounded-2xl border border-green-100 bg-gray-50 p-4 transition hover:border-green-300"
+            >
+              <img
+                src={wechatQrSrc}
+                alt="Jamin 微信咨询二维码"
+                className="mx-auto w-full max-w-[260px] rounded-xl"
+              />
+            </a>
+            <p className="mt-4 text-center text-xs text-gray-400">Jamin · 广东 深圳 · 点击二维码可打开大图</p>
+          </div>
+        </div>
+      )}
     </footer>
   )
 }

@@ -1,6 +1,15 @@
+import { useState } from 'react'
 import { Breadcrumb } from '../components/Layout'
 
 export default function About() {
+  const [wechatOpen, setWechatOpen] = useState(false)
+  const wechatQrSrc = `${import.meta.env.BASE_URL}contact/wechat-qr.png`
+
+  const openWechatModal = (event) => {
+    event.preventDefault()
+    setWechatOpen(true)
+  }
+
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 py-8">
       <Breadcrumb items={[{ label: '关于我 / 技术支持' }]} />
@@ -43,22 +52,30 @@ export default function About() {
 
       <div className="card bg-gradient-to-br from-primary-50 to-blue-50 border-primary-200">
         <h2 className="text-lg font-bold text-gray-900 mb-4">联系方式</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-5">
+        <div className="space-y-4">
           <div className="space-y-4">
-            <div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200">
+            <a
+              href="#wechat-contact"
+              onClick={openWechatModal}
+              className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200 transition hover:border-green-300 hover:shadow-sm"
+            >
               <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center text-lg">💬</div>
               <div>
                 <h4 className="text-sm font-semibold text-gray-900">微信咨询</h4>
-                <p className="text-xs text-gray-500">扫码添加微信，沟通产品选型、模组推荐、开发调试与量产问题</p>
+                <p className="text-xs text-gray-500">点击查看二维码，添加个人微信咨询产品选型与开发调试</p>
               </div>
-            </div>
-            <div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200">
+            </a>
+            <a
+              href="#wechat-contact"
+              onClick={openWechatModal}
+              className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200 transition hover:border-blue-300 hover:shadow-sm"
+            >
               <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center text-lg">👥</div>
               <div>
                 <h4 className="text-sm font-semibold text-gray-900">技术交流群</h4>
-                <p className="text-xs text-gray-500">加入微信群，与同行交流选型经验</p>
+                <p className="text-xs text-gray-500">点击添加个人微信，备注“交流群”邀请入群</p>
               </div>
-            </div>
+            </a>
             <div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200">
               <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center text-lg">🌐</div>
               <div>
@@ -70,26 +87,48 @@ export default function About() {
               </div>
             </div>
           </div>
-          <div className="rounded-2xl bg-white p-4 border border-green-200 shadow-sm text-center lg:w-64">
-            <div className="mb-3">
-              <p className="text-sm font-semibold text-gray-900">咨询微信</p>
-              <p className="text-xs text-gray-500 mt-1">扫一扫，添加我为好友</p>
-            </div>
-            <div className="rounded-xl bg-gray-50 p-3 border border-gray-100">
-              <img
-                src="/contact/wechat-qr.png"
-                alt="Jamin 微信咨询二维码"
-                className="mx-auto w-full max-w-[200px] rounded-lg"
-              />
-            </div>
-            <p className="mt-3 text-xs text-gray-400">Jamin · 广东 深圳</p>
-          </div>
         </div>
       </div>
 
       <div className="mt-8 text-xs text-gray-400 text-center">
         <p>本站为个人FAE技术分享站点，内容仅供参考。具体方案请以涂鸦官方文档为准。</p>
       </div>
+
+      {wechatOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 py-8" onClick={() => setWechatOpen(false)}>
+          <div className="absolute inset-0 bg-gray-950/60 backdrop-blur-sm"></div>
+          <div className="relative w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl" onClick={event => event.stopPropagation()}>
+            <button
+              type="button"
+              onClick={() => setWechatOpen(false)}
+              className="absolute right-4 top-4 rounded-full p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+              aria-label="关闭微信二维码弹窗"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <div className="text-center">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100 text-2xl">💬</div>
+              <h3 className="text-lg font-bold text-gray-900">添加个人微信咨询</h3>
+              <p className="mt-2 text-sm text-gray-500">产品选型、模组推荐、开发调试与量产问题都可以扫码沟通</p>
+            </div>
+            <a
+              href={wechatQrSrc}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 block rounded-2xl border border-green-100 bg-gray-50 p-4 transition hover:border-green-300"
+            >
+              <img
+                src={wechatQrSrc}
+                alt="Jamin 微信咨询二维码"
+                className="mx-auto w-full max-w-[260px] rounded-xl"
+              />
+            </a>
+            <p className="mt-4 text-center text-xs text-gray-400">Jamin · 广东 深圳 · 点击二维码可打开大图</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
