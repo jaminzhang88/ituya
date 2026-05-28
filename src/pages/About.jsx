@@ -1,5 +1,4 @@
 import { Breadcrumb } from '../components/Layout'
-import { Link } from '../components/Router'
 
 export default function About() {
   return (
@@ -44,30 +43,46 @@ export default function About() {
 
       <div className="card bg-gradient-to-br from-primary-50 to-blue-50 border-primary-200">
         <h2 className="text-lg font-bold text-gray-900 mb-4">联系方式</h2>
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200">
-            <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center text-lg">💬</div>
-            <div>
-              <h4 className="text-sm font-semibold text-gray-900">微信咨询</h4>
-              <p className="text-xs text-gray-500">添加企业微信，一对一技术答疑</p>
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-5">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200">
+              <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center text-lg">💬</div>
+              <div>
+                <h4 className="text-sm font-semibold text-gray-900">微信咨询</h4>
+                <p className="text-xs text-gray-500">扫码添加微信，沟通产品选型、模组推荐、开发调试与量产问题</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200">
+              <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center text-lg">👥</div>
+              <div>
+                <h4 className="text-sm font-semibold text-gray-900">技术交流群</h4>
+                <p className="text-xs text-gray-500">加入微信群，与同行交流选型经验</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200">
+              <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center text-lg">🌐</div>
+              <div>
+                <h4 className="text-sm font-semibold text-gray-900">涂鸦开发者平台</h4>
+                <p className="text-xs text-gray-500">
+                  <a href="https://developer.tuya.com" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:underline">developer.tuya.com</a>
+                  {' '}— 官方开发文档与工具
+                </p>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200">
-            <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center text-lg">👥</div>
-            <div>
-              <h4 className="text-sm font-semibold text-gray-900">技术交流群</h4>
-              <p className="text-xs text-gray-500">加入微信群，与同行交流选型经验</p>
+          <div className="rounded-2xl bg-white p-4 border border-green-200 shadow-sm text-center lg:w-64">
+            <div className="mb-3">
+              <p className="text-sm font-semibold text-gray-900">咨询微信</p>
+              <p className="text-xs text-gray-500 mt-1">扫一扫，添加我为好友</p>
             </div>
-          </div>
-          <div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200">
-            <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center text-lg">🌐</div>
-            <div>
-              <h4 className="text-sm font-semibold text-gray-900">涂鸦开发者平台</h4>
-              <p className="text-xs text-gray-500">
-                <a href="https://developer.tuya.com" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:underline">developer.tuya.com</a>
-                {' '}— 官方开发文档与工具
-              </p>
+            <div className="rounded-xl bg-gray-50 p-3 border border-gray-100">
+              <img
+                src="/contact/wechat-qr.png"
+                alt="Jamin 微信咨询二维码"
+                className="mx-auto w-full max-w-[200px] rounded-lg"
+              />
             </div>
+            <p className="mt-3 text-xs text-gray-400">Jamin · 广东 深圳</p>
           </div>
         </div>
       </div>
